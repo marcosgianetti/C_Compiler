@@ -40,6 +40,7 @@
 "default"                           {return 'DEFAULT';}
 "else"                              {return 'ELSE';}
 "while"                             {return 'WHILE';}
+"do"                                {return 'DO';}
 "for"                               {return 'FOR';}
 (?:\w+\s+)([a-zA-Z_][a-zA-Z0-9_]*)  {return 'VAR';}
 "#"                                 {return '#';}
@@ -93,9 +94,9 @@ exp_stmt
 
 /* Gramática do IF */
 if_stmt
-    : IF '(' expressao_condicional ')' statement ELSE statement
+    : IF '(' expressao_condicional ')' '{' statement '}' ELSE  statement 
       {console.log('IF ELSE')}
-    | IF '(' expressao_condicional ')' statement
+    | IF '(' expressao_condicional ')' '{' statement '}'
       {console.log('IF')}
     ;
 
@@ -110,7 +111,7 @@ cases
     ;
 
 default_stmt
-    : DEFAULT statement
+    : DEFAULT ':' statement
     ;
 
 /* Gramática do SWITCH */
@@ -121,14 +122,18 @@ switch_stmt
 /* Gramática do WHILE e do FOR */
 loop_stmt
     : WHILE '(' expressao_condicional ')' '{' statement '}'
-      {console.log('WHILE Statement')}
+       {console.log('WHILE Statement')}
+    | FOR '(' exp_stmt ';' exp_stmt ';' IDF ')' statement
+      {console.log('FOR Statement')}
     | FOR '(' exp_stmt ';' exp_stmt ';' exp_stmt ')' statement
       {console.log('FOR Statement')}
     | FOR '(' exp_stmt ';' exp_stmt ';' ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' exp_stmt ';' ';' exp_stmt ')' statement
+    | FOR '(' exp_stmt ';' ';' IDF ')' statement 
       {console.log('FOR Statement')}
     | FOR '(' exp_stmt ';' ';' ')' statement
+      {console.log('FOR Statement')}
+    | FOR '(' ';' exp_stmt ';' IDF ')' statement
       {console.log('FOR Statement')}
     | FOR '(' ';' exp_stmt ';' exp_stmt ')' statement
       {console.log('FOR Statement')}
@@ -138,6 +143,10 @@ loop_stmt
       {console.log('FOR Statement')}
     | FOR '(' ';' ';' ')' statement
       {console.log('FOR Statement')}
+    
+    | DO '{' statement '}' WHILE '(' expressao_condicional ')' ';'
+      {console.log('DO WHILE statement')}
+      
     ;
 
 /* Valor literal */
@@ -173,14 +182,36 @@ expressao_atribuicao
     {console.log('Atribuição de valor')}
     | IDF '=' IDF 
     {console.log('Atribuição de valor')}
+    | IDF '=' expressao_aritmetica
+    {console.log('Atribuição de valor')}
+    ;
+
+
+expressao_aritmetica
+    : IDF '+' IDF
+    {console.log('Adição de valor')}
+    | IDF '+' valor_lit 
+    {console.log('Adição de valor')}
+    | valor_lit '+' valor_lit 
+    {console.log('Adição de valor')}
+    |IDF '-' IDF
+    {console.log('Subtração de valor')}
+    | IDF '-' valor_lit 
+    {console.log('Subtração de valor')}
+    | valor_lit '-' valor_lit 
+    {console.log('Subtração de valor')}
     ;
 
 expressao_condicional
-    : IDF operador_relacional IDF
+    : IDF operador_relacional IDF expressao_condicional
+      {console.log('Expressão condicional')}
+    | IDF operador_relacional IDF
+      {console.log('Expressão condicional')}
+    | IDF operador_relacional valor_lit expressao_condicional
       {console.log('Expressão condicional')}
     | IDF operador_relacional valor_lit
       {console.log('Expressão condicional')}
-    | operacao_and
+    | operacao_and expressao_condicional
       {console.log('Expressão condicional')}
     | operacao_or
       {console.log('Expressão condicional')}
@@ -189,11 +220,11 @@ expressao_condicional
     ;
 
 operacao_and
-    : expressao_logica AND expressao_logica
+    : AND 
     ;
 
 operacao_or
-    : expressao_logica OR expressao_logica
+    : OR
     ;
 
 operacao_not
