@@ -1,0 +1,3 @@
+float peso = 70;
+float altura = 1.8;
+float imc = peso / (altura * altura);
