@@ -244,21 +244,23 @@ expressao_in_decrement
     {console.log('Decremento --')}
   ;
     
-expressao_aritmetica 
-    : expressao_aritmetica_list 
-    | expressao_aritmetica_list operador_aritmetico expressao_aritmetica
+expressao_aritmetica
+    : termo
+    | expressao_aritmetica '+' termo
+    | expressao_aritmetica '-' termo
     ;
 
-expressao_aritmetica_list 
-    : '(' expressao_aritmetica_list ')'
-    | IDF operador_aritmetico IDF
-    | IDF operador_aritmetico valor_lit
-    | valor_lit operador_aritmetico valor_lit 
+termo
+    : fator
+    | termo '*' fator
+    | termo '/' fator
     ;
 
-operador_aritmetico
-	: '+' | '-' | '*' | '/'
-	;
+fator
+    : IDF 
+    | valor_lit
+    | '(' expressao_aritmetica ')'
+    ;
 
 expressao_condicional
     : IDF operador_relacional IDF expressao_condicional
