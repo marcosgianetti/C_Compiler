@@ -1,0 +1,17 @@
+int SOMA(float a, int b);  
+
+int main()
+{
+    SOMA(16.7,15);  
+}                    
+
+int  SOMA(float a, int b)  
+{
+   float result;     
+   for(contador = 1; contador <= 10; contador++)
+   {
+    printf();
+   }            
+   result = a+b;
+   printf();
+}

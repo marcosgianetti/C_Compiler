@@ -69,7 +69,7 @@ statements
     ;
 
 statement
-    : exp_stmt ';' {console.log('Expressao')}
+    : exp_stmt 
     | BREAK ';' {console.log('Break Statement')}
     | CONTINUE ';' {console.log('Continue Statement')}
     | if_stmt
@@ -87,9 +87,11 @@ statement_composto
 
 /* Declaração de variável, atribuição de valor, expressão condicional */
 exp_stmt
-    : declaracao_variavel
-    | expressao_atribuicao
-    | expressao_condicional
+    : declaracao_variavel ';' {console.log('Declaração de variável')}
+    | declaracao_funcao {console.log('Declaração de função')}
+    | expressao_atribuicao ';'{console.log('Atribuição de valor')}
+    | expressao_condicional ';' {console.log('Expressao condicional')}
+    | chamada_funcao ';' {console.log('Chamada de função')}
     ;
 
 /* Gramática do IF */
@@ -123,23 +125,23 @@ switch_stmt
 loop_stmt
     : WHILE '(' expressao_condicional ')' '{' statement '}'
        {console.log('WHILE Statement')}
-    | FOR '(' exp_stmt ';' exp_stmt ';' IDF ')' statement
+    | FOR '(' exp_stmt  exp_stmt  IDF ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' exp_stmt ';' exp_stmt ';' exp_stmt ')' statement
+    | FOR '(' exp_stmt  exp_stmt  expressao_atribuicao ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' exp_stmt ';' exp_stmt ';' ')' statement
+    | FOR '(' exp_stmt  exp_stmt  ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' exp_stmt ';' ';' IDF ')' statement 
+    | FOR '(' exp_stmt  ';' IDF ')' statement 
       {console.log('FOR Statement')}
-    | FOR '(' exp_stmt ';' ';' ')' statement
+    | FOR '(' exp_stmt  ';' ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' ';' exp_stmt ';' IDF ')' statement
+    | FOR '(' ';' exp_stmt  IDF ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' ';' exp_stmt ';' exp_stmt ')' statement
+    | FOR '(' ';' exp_stmt  expressao_atribuicao ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' ';' exp_stmt ';' ')' statement
+    | FOR '(' ';' exp_stmt  ')' statement
       {console.log('FOR Statement')}
-    | FOR '(' ';' ';' exp_stmt ')' statement
+    | FOR '(' ';' ';' expressao_atribuicao ')' statement
       {console.log('FOR Statement')}
     | FOR '(' ';' ';' ')' statement
       {console.log('FOR Statement')}
@@ -159,95 +161,113 @@ valor_lit
 /* Tipo da variável */
 tipo_var
     : INT
-    {console.log('Variavel int')}
+    {console.log('int')}
     | DOUBLE
-    {console.log('Variavel double')}
+    {console.log('double')}
     | FLOAT
-    {console.log('Variavel float')}
+    {console.log('float')}
     | CHAR
-    {console.log('Variavel char')}
+    {console.log('char')}
     ;
 
 /* Declaração de variável com ou sem inicialização */
 declaracao_variavel
-    : tipo_var IDF 
-    {console.log('Declaração de variável')}
-    | tipo_var expressao_atribuicao
-    {console.log('Inicialização de variável')}
-    ;
+	: tipo_var declaracao
+	| tipo_var declaracao inicializacao_variavel
+	;
+
+declaracao
+	: '*' declaracao_list
+	| declaracao_list
+	;
+
+declaracao_list	
+	: IDF
+	| declaracao_list '['	']'
+	| declaracao_list '[' INT_LIT ']'
+	;
+
+inicializacao_variavel
+	: '=' valor_lit 
+	| '=' IDF
+	| '=' expressao_aritmetica
+	| '=' '*' IDF
+	;
+
+declaracao_funcao
+	: tipo_var IDF '(' ')' '{' statements '}'
+	| tipo_var IDF '(' definicao_parametros ')' '{' statements '}'
+	| tipo_var IDF '(' ')' ';'
+	| tipo_var IDF '(' definicao_parametros ')' ';'
+	;
+
+definicao_parametros
+	: declaracao_variavel
+	| declaracao_variavel ',' definicao_parametros
+	;
+
+chamada_funcao
+	: IDF '(' passagem_parametros ')'
+	| IDF '(' ')'
+	;
+
+passagem_parametros
+	: IDF
+	| valor_lit
+	| IDF ',' passagem_parametros
+	| valor_lit ',' passagem_parametros
+	;
 
 /* Atribuição de valor */
 expressao_atribuicao
-    : IDF '=' valor_lit 
+    : IDF operador_atribuicao valor_lit 
     {console.log('Atribuição de valor')}
-    | IDF '=' IDF 
+    | IDF operador_atribuicao IDF 
     {console.log('Atribuição de valor')}
-    | IDF '=' expressao_aritmetica
+    | IDF operador_atribuicao expressao_aritmetica 
     {console.log('Atribuição de valor')}    
-    | IDF '=' '*' IDF
+    | IDF operador_atribuicao '*' IDF 
     {console.log('Atribuição de ponteiro')}
-    | IDF '=' IDF '(' IDF ')'
+    | IDF operador_atribuicao IDF '(' IDF ')' 
     {console.log('Atribuição de Função')}
-    |IDF '=' IDF '(' ')'
-    {console.log('Atribuição de Função')}
-    | IDF'[' INT_LIT ']'
-    {console.log('Variavel int')}
-    | IDF '+''=' IDF 
-    {console.log('increment de valor')}
-    | IDF '-''=' IDF 
-    {console.log('Decrement de valor')}
     | expressao_in_decrement
     ;
 
+operador_atribuicao	
+	: '=' | '*''=' | '/''=' | '%''=' | '+''=' | '-''=' 
+	;		
+
 expressao_in_decrement
-  :IDF '+''+'
-  {console.log('Increment prefix')}
+  : IDF '+''+'
+    {console.log('Incremento ++')}
   | IDF '-''-'
-  {console.log('Dencrement prefix')}
+    {console.log('Decremento --')}
   ;
     
-expressao_aritmetica
-    : IDF '+' IDF
-    {console.log('Adição de valor')}
-    | IDF '+' valor_lit 
-    {console.log('Adição de valor')}
-    | valor_lit '+' valor_lit 
-    {console.log('Adição de valor')}
-    |IDF '-' IDF
-    {console.log('Subtração de valor')}
-    | IDF '-' valor_lit 
-    {console.log('Subtração de valor')}
-    | valor_lit '-' valor_lit 
-    {console.log('Subtração de valor')}
-    | IDF '/' IDF
-    {console.log('Divisão de valor')}
-    | IDF '/' valor_lit 
-    {console.log('Divisão de valor')}
-    | valor_lit '/' valor_lit 
-    {console.log('Divisão de valor')}
-    | IDF '*' IDF
-    {console.log('Multiplicação de valor')}
-    | IDF '*' valor_lit 
-    {console.log('Multiplicação de valor')}
-    | valor_lit '*' valor_lit 
-    {console.log('Multiplicação de valor')} 
+expressao_aritmetica 
+    : expressao_aritmetica_list 
+    | expressao_aritmetica_list operador_aritmetico expressao_aritmetica
     ;
+
+expressao_aritmetica_list 
+    : '(' expressao_aritmetica_list ')'
+    | IDF operador_aritmetico IDF
+    | IDF operador_aritmetico valor_lit
+    | valor_lit operador_aritmetico valor_lit 
+    ;
+
+operador_aritmetico
+	: '+' | '-' | '*' | '/'
+	;
 
 expressao_condicional
     : IDF operador_relacional IDF expressao_condicional
-      {console.log('Expressão condicional')}
     | IDF operador_relacional IDF
-      {console.log('Expressão condicional')}
     | IDF operador_relacional valor_lit expressao_condicional
-      {console.log('Expressão condicional')}
     | IDF operador_relacional valor_lit
-      {console.log('Expressão condicional')}
     | operacao_and expressao_condicional
-      {console.log('Expressão condicional')}
     | operacao_or
-      {console.log('Expressão condicional')}
     | operacao_not
-      {console.log('Expressão condicional')}
     ;
 
 operacao_and
