@@ -1,0 +1,17 @@
+int main()
+{
+  int A;
+  int B;
+  int Soma;
+  
+  Soma = A + B;
+  printf ();
+  
+  if(Soma > 10)
+  {
+    printf();
+  }
+  
+  system();
+  return();
+}

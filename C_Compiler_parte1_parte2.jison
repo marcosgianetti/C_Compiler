@@ -228,7 +228,7 @@ expressao_atribuicao
     {console.log('Atribuição de valor')}    
     | IDF operador_atribuicao '*' IDF 
     {console.log('Atribuição de ponteiro')}
-    | IDF operador_atribuicao IDF '(' IDF ')' 
+    | IDF operador_atribuicao chamada_funcao 
     {console.log('Atribuição de Função')}
     | expressao_in_decrement
     ;
