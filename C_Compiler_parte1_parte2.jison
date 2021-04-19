@@ -183,10 +183,29 @@ expressao_atribuicao
     | IDF '=' IDF 
     {console.log('Atribuição de valor')}
     | IDF '=' expressao_aritmetica
-    {console.log('Atribuição de valor')}
+    {console.log('Atribuição de valor')}    
+    | IDF '=' '*' IDF
+    {console.log('Atribuição de ponteiro')}
+    | IDF '=' IDF '(' IDF ')'
+    {console.log('Atribuição de Função')}
+    |IDF '=' IDF '(' ')'
+    {console.log('Atribuição de Função')}
+    | IDF'[' INT_LIT ']'
+    {console.log('Variavel int')}
+    | IDF '+''=' IDF 
+    {console.log('increment de valor')}
+    | IDF '-''=' IDF 
+    {console.log('Decrement de valor')}
+    | expressao_in_decrement
     ;
 
-
+expressao_in_decrement
+  :IDF '+''+'
+  {console.log('Increment prefix')}
+  | IDF '-''-'
+  {console.log('Dencrement prefix')}
+  ;
+    
 expressao_aritmetica
     : IDF '+' IDF
     {console.log('Adição de valor')}
@@ -200,6 +219,18 @@ expressao_aritmetica
     {console.log('Subtração de valor')}
     | valor_lit '-' valor_lit 
     {console.log('Subtração de valor')}
+    | IDF '/' IDF
+    {console.log('Divisão de valor')}
+    | IDF '/' valor_lit 
+    {console.log('Divisão de valor')}
+    | valor_lit '/' valor_lit 
+    {console.log('Divisão de valor')}
+    | IDF '*' IDF
+    {console.log('Multiplicação de valor')}
+    | IDF '*' valor_lit 
+    {console.log('Multiplicação de valor')}
+    | valor_lit '*' valor_lit 
+    {console.log('Multiplicação de valor')} 
     ;
 
 expressao_condicional
