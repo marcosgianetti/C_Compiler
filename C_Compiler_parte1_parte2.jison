@@ -188,10 +188,8 @@ declaracao_list
 	;
 
 inicializacao_variavel
-	: '=' valor_lit 
-	| '=' IDF
-	| '=' expressao_aritmetica
-	| '=' '*' IDF
+	: '=' expressao_aritmetica 
+	| '=' '*' expressao_aritmetica
 	;
 
 declaracao_funcao
@@ -220,13 +218,9 @@ passagem_parametros
 
 /* Atribuição de valor */
 expressao_atribuicao
-    : IDF operador_atribuicao valor_lit 
-    {console.log('Atribuição de valor')}
-    | IDF operador_atribuicao IDF 
-    {console.log('Atribuição de valor')}
-    | IDF operador_atribuicao expressao_aritmetica 
-    {console.log('Atribuição de valor')}    
-    | IDF operador_atribuicao '*' IDF 
+    : IDF operador_atribuicao expressao_aritmetica 
+    {console.log('Atribuição de valor')}   
+    | IDF operador_atribuicao '*' expressao_aritmetica 
     {console.log('Atribuição de ponteiro')}
     | IDF operador_atribuicao chamada_funcao 
     {console.log('Atribuição de Função')}
