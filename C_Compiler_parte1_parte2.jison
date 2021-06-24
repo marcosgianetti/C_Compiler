@@ -1,3 +1,30 @@
+%{
+    var escopoAtual = 0;
+    var tabelaSimbolos = [];
+    var tac = [];
+    var erros = [];
+
+    
+    function criarVariavel(tipo, nome, valor){
+    	if(typeof valor === 'string'){
+    		tabelaSimbolos.map((dictAtual) => {
+    			if (dictAtual.id == valor){
+    				tabelaSimbolos.push({ tipo: tipo, id: nome, val: dictAtual.val});
+    			}
+    		})
+    	}
+        tabelaSimbolos.push({ tipo: tipo, id: nome, val: valor});
+        console.log(tabelaSimbolos)
+    }
+    
+    function atribuirValor(nome, valor){
+
+    }
+   
+    
+%}
+
+
 %lex
 
 %%
@@ -25,7 +52,7 @@
 "}"                                 {return '}';}
 "< "                                {return '<';}
 "> "                                {return '>';}
-"= "                                {return '=';}
+"="                                 {return '=';}
 "<="                                {return 'LE';}
 ">="                                {return 'GE';}
 "=="                                {return 'EQ';}
@@ -161,36 +188,20 @@ valor_lit
 /* Tipo da variável */
 tipo_var
     : INT
-    {console.log('int')}
     | DOUBLE
-    {console.log('double')}
     | FLOAT
-    {console.log('float')}
     | CHAR
-    {console.log('char')}
     ;
 
 /* Declaração de variável com ou sem inicialização */
 declaracao_variavel
-	: tipo_var declaracao
-	| tipo_var declaracao inicializacao_variavel
-	;
-
-declaracao
-	: '*' declaracao_list
-	| declaracao_list
-	;
-
-declaracao_list	
-	: IDF
-	| declaracao_list '['	']'
-	| declaracao_list '[' INT_LIT ']'
-	;
-
-inicializacao_variavel
-	: '=' expressao_aritmetica 
-	| '=' '*' expressao_aritmetica
-	;
+    : tipo_var IDF 
+    {criarVariavel($1, $2, 'Null')}
+    | tipo_var IDF '=' valor_lit 
+    {criarVariavel($1, $2, $4)}
+    | tipo_var IDF '=' IDF 
+    {criarVariavel($1, $2, $4)}
+    ;
 
 declaracao_funcao
 	: tipo_var IDF '(' ')' '{' statements '}'
@@ -218,12 +229,9 @@ passagem_parametros
 
 /* Atribuição de valor */
 expressao_atribuicao
-    : IDF operador_atribuicao expressao_aritmetica 
-    {console.log('Atribuição de valor')}   
+    : IDF operador_atribuicao expressao_aritmetica   
     | IDF operador_atribuicao '*' expressao_aritmetica 
-    {console.log('Atribuição de ponteiro')}
     | IDF operador_atribuicao chamada_funcao 
-    {console.log('Atribuição de Função')}
     | expressao_in_decrement
     ;
 
@@ -251,7 +259,7 @@ termo
     ;
 
 fator
-    : IDF 
+    : IDF
     | valor_lit
     | '(' expressao_aritmetica ')'
     ;
