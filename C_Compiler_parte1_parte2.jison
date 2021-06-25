@@ -5,20 +5,29 @@
     var erros = [];
 
     
-    function criarVariavel(tipo, nome, valor){
-    	if(typeof valor === 'string'){
+    function criarVariavel(tipo, nome, valor, isLiteral){
+    	if(!isLiteral){
     		tabelaSimbolos.map((dictAtual) => {
     			if (dictAtual.id == valor){
-    				tabelaSimbolos.push({ tipo: tipo, id: nome, val: dictAtual.val});
+    				tabelaSimbolos.push({ tipo: tipo, id: nome, val: dictAtual.val, escopo:escopoAtual});
     			}
     		})
-    	}
-        tabelaSimbolos.push({ tipo: tipo, id: nome, val: valor});
+    	} else {
+        tabelaSimbolos.push({ tipo: tipo, id: nome, val: valor, escopo:escopoAtual});
+        }
         console.log(tabelaSimbolos)
     }
     
     function atribuirValor(nome, valor){
 
+    }
+
+    function somaEscopo(){
+    	escopoAtual++
+    }
+
+    function subtraiEscopo(){
+    	escopoAtual--
     }
    
     
@@ -196,11 +205,15 @@ tipo_var
 /* Declaração de variável com ou sem inicialização */
 declaracao_variavel
     : tipo_var IDF 
-    {criarVariavel($1, $2, 'Null')}
-    | tipo_var IDF '=' valor_lit 
-    {criarVariavel($1, $2, $4)}
+    {criarVariavel($1, $2, 'Null', 'Null')}
+    | tipo_var IDF '=' F_LIT 
+    {criarVariavel($1, $2, parseFloat($4), true)}
+    | tipo_var IDF '=' INT_LIT 
+    {criarVariavel($1, $2, parseInt($4), true)}
+    | tipo_var IDF '=' CHAR_LIT 
+    {criarVariavel($1, $2, $4, true)}
     | tipo_var IDF '=' IDF 
-    {criarVariavel($1, $2, $4)}
+    {criarVariavel($1, $2, $4, false)}
     ;
 
 declaracao_funcao
