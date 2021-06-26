@@ -3,10 +3,49 @@
     var tabelaSimbolos = [];
     var tac = [];
     var erros = [];
+    var posOrdem = []
+    var inOrdem = []
+    var byLevel = []
 
+    class AST {
+
+  		constructor(root){
+  		this.root = root
+  		}
+
+  		postorder(node){
+		    if(node !== null)
+		    {
+		        this.postorder(node.leftChild);
+		        this.postorder(node.rightChild);
+		        posOrdem.push(node.type);
+		    }
+		}
+
+		inorder(node)
+		{
+		    if(node !== null)
+		    {
+		        this.inorder(node.leftChild);
+		        inOrdem.push(node.type);
+		        this.inorder(node.rightChild);
+		    }
+		}
+
+  	}
+
+    class Node {
+
+  		constructor(type, leftChild = null, rightChild = null) {
+  		this.type = type
+  		this.leftChild = leftChild
+    	this.rightChild = rightChild;
+  	}
+
+	}
     
-    function criarVariavel(tipo, nome, valor, isLiteral){
-    	if(!isLiteral){
+    function criarVariavel(tipo, nome, valor){
+    	if(typeof valor === 'string'){
     		tabelaSimbolos.map((dictAtual) => {
     			if (dictAtual.id == valor){
     				tabelaSimbolos.push({ tipo: tipo, id: nome, val: dictAtual.val, escopo:escopoAtual});
@@ -15,33 +54,6 @@
     	} else {
         tabelaSimbolos.push({ tipo: tipo, id: nome, val: valor, escopo:escopoAtual});
         }
-        console.log(tabelaSimbolos)
-    }
-
-    class AST {
-
-    	constructor{
-    		this.root = null
-    	}
-    }
-
-    class Node {
-
-    	constructor(data){
-    		this.data = data
-    	}
-    }
-    
-    function atribuirValor(nome, valor){
-
-    }
-
-    function somaEscopo(){
-    	escopoAtual++
-    }
-
-    function subtraiEscopo(){
-    	escopoAtual--
     }
    
     
@@ -120,46 +132,39 @@ statements
 
 statement
     : exp_stmt 
-    | BREAK ';' {console.log('Break Statement')}
-    | CONTINUE ';' {console.log('Continue Statement')}
+    | BREAK ';' 
+    | CONTINUE ';' 
     | if_stmt
     | loop_stmt
-    | switch_stmt {console.log('SWITCH Statement')}
+    | switch_stmt 
     | statement_composto
     ;
 
 statement_composto 
     : '{' statements '}'
-      {console.log('COMPOSTO')}
     | '{' '}'
-      {console.log('COMPOSTO')}
     ;
 
 /* Declaração de variável, atribuição de valor, expressão condicional */
 exp_stmt
-    : declaracao_variavel ';' {console.log('Declaração de variável')}
-    | declaracao_funcao {console.log('Declaração de função')}
-    | expressao_atribuicao ';'{console.log('Atribuição de valor')}
-    | expressao_condicional ';' {console.log('Expressao condicional')}
-    | chamada_funcao ';' {console.log('Chamada de função')}
+    : declaracao_variavel ';' 
+    | declaracao_funcao 
+    | expressao_atribuicao ';'
+    | expressao_condicional ';' 
+    | chamada_funcao ';' 
     ;
 
 /* Gramática do IF */
 if_stmt
     : IF '(' expressao_condicional ')' '{' statement '}' ELSE  statement 
-      {console.log('IF ELSE')}
     | IF '(' expressao_condicional ')' '{' statement '}'
-      {console.log('IF')}
     ;
 
 /* Gramática do CASE */
 cases
     : CASE valor_lit ':' statement
-      {console.log('Case Statement Simples')}
     | CASE valor_lit ':' statement cases
-      {console.log('Case Statement Multiplo')}
     | default_stmt
-      {console.log('Default')}
     ;
 
 default_stmt
@@ -174,27 +179,17 @@ switch_stmt
 /* Gramática do WHILE e do FOR */
 loop_stmt
     : WHILE '(' expressao_condicional ')' '{' statement '}'
-       {console.log('WHILE Statement')}
     | FOR '(' exp_stmt  exp_stmt  IDF ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' exp_stmt  exp_stmt  expressao_atribuicao ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' exp_stmt  exp_stmt  ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' exp_stmt  ';' IDF ')' statement 
-      {console.log('FOR Statement')}
     | FOR '(' exp_stmt  ';' ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' ';' exp_stmt  IDF ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' ';' exp_stmt  expressao_atribuicao ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' ';' exp_stmt  ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' ';' ';' expressao_atribuicao ')' statement
-      {console.log('FOR Statement')}
     | FOR '(' ';' ';' ')' statement
-      {console.log('FOR Statement')}
+
     
     | DO '{' statement '}' WHILE '(' expressao_condicional ')' ';'
       {console.log('DO WHILE statement')}
@@ -204,8 +199,11 @@ loop_stmt
 /* Valor literal */
 valor_lit
     : F_LIT
+    {$$ = parseFloat($1)}
     | INT_LIT
+    {$$ = parseInt($1)}
     | CHAR_LIT
+    {$$ = $1}
     ;
 
 /* Tipo da variável */
@@ -218,54 +216,23 @@ tipo_var
 
 /* Declaração de variável com ou sem inicialização */
 declaracao_variavel
-    : tipo_var IDF 
-    {criarVariavel($1, $2, 'Null', 'Null')}
-    | tipo_var IDF '=' F_LIT 
-    {criarVariavel($1, $2, parseFloat($4), true)}
-    | tipo_var IDF '=' INT_LIT 
-    {criarVariavel($1, $2, parseInt($4), true)}
-    | tipo_var IDF '=' CHAR_LIT 
-    {criarVariavel($1, $2, $4, true)}
-    | tipo_var IDF '=' operacao_aritmetica 
-    | tipo_var IDF '=' IDF 
-    {criarVariavel($1, $2, $4, false)}    
-    ;
-
-operacao_aritmetica
-  : INT_LIT '+' INT_LIT {criarVariavel($-2, $-1, parseInt($1)+parseInt($3), true)}
-  | INT_LIT '-' INT_LIT {criarVariavel($-2, $-1, parseInt($1)-parseInt($3), true)}
-  | INT_LIT '*' INT_LIT {criarVariavel($-2, $-1, parseInt($1)*parseInt($3), true)}
-  | INT_LIT '/' INT_LIT {criarVariavel($-2, $-1, parseInt($1)/parseInt($3), true)}
-  | F_LIT '+' F_LIT {criarVariavel($-2, $-1, parseFloat($1)+parseFloat($3), true)}
-  | F_LIT '-' F_LIT {criarVariavel($-2, $-1, parseFloat($1)-parseFloat($3), true)}
-  | F_LIT '*' F_LIT {criarVariavel($-2, $-1, parseFloat($1)*parseFloat($3), true)}
-  | F_LIT '/' F_LIT {criarVariavel($-2, $-1, parseFloat($1)/parseFloat($3), true)}
-  | '(' operacao_aritmetica ')'
-  ;
-
-declaracao_funcao
-	: tipo_var IDF '(' ')' '{' statements '}'
-	| tipo_var IDF '(' definicao_parametros ')' '{' statements '}'
-	| tipo_var IDF '(' ')' ';'
-	| tipo_var IDF '(' definicao_parametros ')' ';'
+	: tipo_var IDF
+	{criarVariavel($1, $2, null)}
+	| tipo_var IDF '=' expressao_aritmetica
+	{
+	criarVariavel($1, $2, $4.value)
+	const leftChild = new Node($2)
+    const node = new Node($3, leftChild, $4.node)
+	const arvore = new AST(node)
+	arvore.postorder(node)
+	arvore.inorder(node)
+	arvore.bylevel(node)
+	console.log(posOrdem)
+	console.log(inOrdem)
+	console.log(byLevel)
+	}
 	;
 
-definicao_parametros
-	: declaracao_variavel
-	| declaracao_variavel ',' definicao_parametros
-	;
-
-chamada_funcao
-	: IDF '(' passagem_parametros ')'
-	| IDF '(' ')'
-	;
-
-passagem_parametros
-	: IDF
-	| valor_lit
-	| IDF ',' passagem_parametros
-	| valor_lit ',' passagem_parametros
-	;
 
 /* Atribuição de valor */
 expressao_atribuicao
@@ -288,20 +255,89 @@ expressao_in_decrement
     
 expressao_aritmetica
     : termo
-    | expressao_aritmetica '+' termo 
-    | expressao_aritmetica '-' termo 
+    {	$$ = {
+    	type: $1.type,
+    	value: $1.value,
+    	arguments: $1.arguments,
+    	node: $1.node
+    	}
+    }
+    | expressao_aritmetica '+' termo
+    {	$$ = {
+    	type: $2,
+    	value: $1.value + $3.value,
+    	arguments: [$1, $3],
+    	node: new Node($2, $1.node, $3.node)
+    	}
+    }
+    | expressao_aritmetica '-' termo
+    {	$$ = {
+    	type: $2,
+    	value: $1.value - $3.value,
+    	arguments: [$1, $3],
+    	node: new Node($2, $1.node, $3.node)
+    	}
+    }
     ;
 
 termo
     : fator
-    | termo '*' fator 
-    | termo '/' fator 
+    {	$$ = {
+    	type: $1.type,
+    	value: $1.value,
+    	arguments: $1.arguments,
+    	node: $1.node
+    	}
+    }
+    | termo '*' fator
+    {	$$ = {
+    	type: $2,
+    	value: $1.value * $3.value,
+    	arguments: [$1, $3],
+    	node: new Node($2, $1.node, $3.node)
+    	}
+    }
+    | termo '/' fator
+    {	
+    	if($1.type == $3.type == 'IDF'){
+    		//chamar função de verificar se variáveis foram declaradas
+    		//chamar função que acha o valor de uma variável já declarada
+    	}
+    	$$ = {
+    	type: $2,
+    	value: $1.value / $3.value,
+    	arguments: [$1, $3],
+    	node: new Node($2, $1.node, $3.node)
+    	}
+    }
     ;
 
 fator
     : IDF
+    {	
+    	$$ = {
+    	type: $1,
+    	value: $1,
+    	arguments: [],
+    	node: new Node($1)
+    	}
+    }
     | valor_lit
+    {	$$ = {
+    	type: $1,
+    	value: $1,
+    	arguments: [],
+    	node: new Node($1)
+    	}
+    }
     | '(' expressao_aritmetica ')'
+    {	$$ = {
+    	type: '$2.type',
+    	value: $2.value,
+    	arguments: $2.arguments,
+    	node: $2.node
+    	}
+    }
     ;
 
 expressao_condicional
@@ -328,5 +364,5 @@ operacao_not
 
 operador_relacional
     : LE | GE  | EQ  | NE | '>' | '<'
-    {console.log('Operador relacional')}
+    {console.log($1)}
     ;
