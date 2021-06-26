@@ -17,6 +17,20 @@
         }
         console.log(tabelaSimbolos)
     }
+
+    class AST {
+
+    	constructor{
+    		this.root = null
+    	}
+    }
+
+    class Node {
+
+    	constructor(data){
+    		this.data = data
+    	}
+    }
     
     function atribuirValor(nome, valor){
 
