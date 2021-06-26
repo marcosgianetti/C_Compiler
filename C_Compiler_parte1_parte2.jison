@@ -226,9 +226,22 @@ declaracao_variavel
     {criarVariavel($1, $2, parseInt($4), true)}
     | tipo_var IDF '=' CHAR_LIT 
     {criarVariavel($1, $2, $4, true)}
+    | tipo_var IDF '=' operacao_aritmetica 
     | tipo_var IDF '=' IDF 
-    {criarVariavel($1, $2, $4, false)}
+    {criarVariavel($1, $2, $4, false)}    
     ;
+
+operacao_aritmetica
+  : INT_LIT '+' INT_LIT {criarVariavel($-2, $-1, parseInt($1)+parseInt($3), true)}
+  | INT_LIT '-' INT_LIT {criarVariavel($-2, $-1, parseInt($1)-parseInt($3), true)}
+  | INT_LIT '*' INT_LIT {criarVariavel($-2, $-1, parseInt($1)*parseInt($3), true)}
+  | INT_LIT '/' INT_LIT {criarVariavel($-2, $-1, parseInt($1)/parseInt($3), true)}
+  | F_LIT '+' F_LIT {criarVariavel($-2, $-1, parseFloat($1)+parseFloat($3), true)}
+  | F_LIT '-' F_LIT {criarVariavel($-2, $-1, parseFloat($1)-parseFloat($3), true)}
+  | F_LIT '*' F_LIT {criarVariavel($-2, $-1, parseFloat($1)*parseFloat($3), true)}
+  | F_LIT '/' F_LIT {criarVariavel($-2, $-1, parseFloat($1)/parseFloat($3), true)}
+  | '(' operacao_aritmetica ')'
+  ;
 
 declaracao_funcao
 	: tipo_var IDF '(' ')' '{' statements '}'
@@ -267,7 +280,7 @@ operador_atribuicao
 	;		
 
 expressao_in_decrement
-  : IDF '+''+'
+  : IDF '+''+' 
     {console.log('Incremento ++')}
   | IDF '-''-'
     {console.log('Decremento --')}
@@ -275,14 +288,14 @@ expressao_in_decrement
     
 expressao_aritmetica
     : termo
-    | expressao_aritmetica '+' termo
-    | expressao_aritmetica '-' termo
+    | expressao_aritmetica '+' termo 
+    | expressao_aritmetica '-' termo 
     ;
 
 termo
     : fator
-    | termo '*' fator
-    | termo '/' fator
+    | termo '*' fator 
+    | termo '/' fator 
     ;
 
 fator
