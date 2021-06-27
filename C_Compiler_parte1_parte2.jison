@@ -44,6 +44,38 @@
 
 	}
     
+    function printPosOrder(node, deep){
+        tree = "";
+        for(i=0; i<deep; i++){
+            tree = tree + "|";
+        }
+        tree = tree + '-';
+        if(deep == 1){
+            console.log('header -', node.type);
+        }
+
+        if(node !== null){
+            if(node.leftChild !== null){
+                console.log(tree, node.leftChild.type);
+                if(node.leftChild.leftChild !== null || node.leftChild.rightChild !== null)
+                    printPosOrder(node.leftChild, deep + 1);
+            }
+        
+        tree = "";
+        for(i=0; i<deep; i++){
+            tree = tree + "|";
+        }
+        tree = tree + '-';
+
+        if(node.rightChild !== null){
+            console.log(tree, node.rightChild.type);
+            if(node.rightChild.leftChild !== null || node.rightChild.rightChild !== null)
+                printPosOrder(node.rightChild, deep + 1);
+            //printPosOrder(node.rightChild,deep + 1);
+        }
+        }
+    }
+
     function criarVariavel(tipo, nome, valor){
     	if(typeof valor === 'string'){
     		tabelaSimbolos.map((dictAtual) => {
@@ -55,8 +87,6 @@
         tabelaSimbolos.push({ tipo: tipo, id: nome, val: valor, escopo:escopoAtual});
         }
     }
-   
-    
 %}
 
 
@@ -222,14 +252,18 @@ declaracao_variavel
 	{
 	criarVariavel($1, $2, $4.value)
 	const leftChild = new Node($2)
+    //console.log('aaaa:',$4.node)
     const node = new Node($3, leftChild, $4.node)
 	const arvore = new AST(node)
+    //printPosOrder(node)
 	arvore.postorder(node)
 	arvore.inorder(node)
-	arvore.bylevel(node)
+	//arvore.bylevel(node)
 	console.log(posOrdem)
 	console.log(inOrdem)
-	console.log(byLevel)
+	//console.log(byLevel)
+    printPosOrder(node,1)
+
 	}
 	;
 
